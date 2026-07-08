@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
@@ -14,8 +14,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private base = '/api';
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   getSummary(): Observable<Summary> {
     return this.http.get<Summary>(`${this.base}/summary`);

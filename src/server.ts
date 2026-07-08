@@ -18,7 +18,7 @@ import {
 } from "./db.ts";
 
 const PORT = Number(process.env.PORT ?? 4300);
-const WEB_DIST = fileURLToPath(new URL("../web/dist/web/browser", import.meta.url));
+const WEB_DIST = fileURLToPath(new URL("../web/dist/web", import.meta.url));
 const ASSETS_DIR = fileURLToPath(new URL("../data/assets", import.meta.url));
 const MANIFEST_PATH = join(ASSETS_DIR, "manifest.json");
 

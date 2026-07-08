@@ -1,11 +1,11 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   ElementRef,
-  Input,
-  OnChanges,
+  input,
   OnDestroy,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { Chart } from 'chart.js';
 import { HistoryPoint } from '../core/models';
@@ -15,42 +15,45 @@ import { HistoryPoint } from '../core/models';
   standalone: true,
   template: `
     <div style="position: relative; height: 220px;">
-      <canvas #canvas role="img" [attr.aria-label]="'Price history for ' + label"></canvas>
+      <canvas #canvas role="img" [attr.aria-label]="'Price history for ' + label()"></canvas>
     </div>
   `
 })
-export class HistoryChartComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() points: HistoryPoint[] = [];
-  @Input() label = '';
+export class HistoryChartComponent implements AfterViewInit, OnDestroy {
+  points = input<HistoryPoint[]>([]);
+  label = input('');
 
-  @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
   private chart?: Chart;
 
+  constructor() {
+    effect(() => {
+      this.render(this.points(), this.label());
+    });
+  }
+
   ngAfterViewInit(): void {
-    this.render();
+    this.render(this.points(), this.label());
   }
 
-  ngOnChanges(): void {
-    this.render();
-  }
-
-  private render(): void {
-    if (!this.canvasRef) return;
+  private render(points: HistoryPoint[], label: string): void {
+    const canvas = this.canvasRef()?.nativeElement;
+    if (!canvas) return;
     this.chart?.destroy();
-    if (this.points.length === 0) return;
+    if (points.length === 0) return;
 
     const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
     const axisColor = isDark ? '#c3c2b7' : '#898781';
     const gridColor = isDark ? '#2c2c2a' : '#e1e0d9';
 
-    this.chart = new Chart(this.canvasRef.nativeElement, {
+    this.chart = new Chart(canvas, {
       type: 'line',
       data: {
-        labels: this.points.map((p) => new Date(p.fetched_at).toLocaleString()),
+        labels: points.map((p) => new Date(p.fetched_at).toLocaleString()),
         datasets: [
           {
-            label: this.label,
-            data: this.points.map((p) => p.primary_value),
+            label,
+            data: points.map((p) => p.primary_value),
             borderColor: '#2a78d6',
             backgroundColor: 'rgba(42,120,214,0.1)',
             borderWidth: 2,

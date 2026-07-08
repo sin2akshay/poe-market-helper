@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 export type HistoryRange = '24h' | '7d' | '30d' | 'all';
 
@@ -23,7 +23,7 @@ export function filterByRange<T extends { fetched_at: number }>(
   template: `
     <div class="range-picker" role="group" aria-label="History time range">
       @for (r of ranges; track r) {
-        <button type="button" [class.selected]="value === r" (click)="pick(r)">
+        <button type="button" [class.selected]="value() === r" (click)="pick(r)">
           {{ r === 'all' ? 'All' : r }}
         </button>
       }
@@ -61,11 +61,10 @@ export function filterByRange<T extends { fetched_at: number }>(
 })
 export class RangePickerComponent {
   readonly ranges: HistoryRange[] = ['24h', '7d', '30d', 'all'];
-  @Input() value: HistoryRange = 'all';
-  @Output() valueChange = new EventEmitter<HistoryRange>();
+  value = input<HistoryRange>('all');
+  valueChange = output<HistoryRange>();
 
   pick(r: HistoryRange): void {
-    this.value = r;
     this.valueChange.emit(r);
   }
 }

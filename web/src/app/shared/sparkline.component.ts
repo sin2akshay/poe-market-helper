@@ -1,11 +1,11 @@
 import {
   AfterViewInit,
   Component,
+  effect,
   ElementRef,
-  Input,
-  OnChanges,
+  input,
   OnDestroy,
-  ViewChild
+  viewChild
 } from '@angular/core';
 import { Chart } from 'chart.js';
 
@@ -15,32 +15,35 @@ import { Chart } from 'chart.js';
   template: `<canvas #canvas width="100" height="28"></canvas>`,
   styles: [':host { display: inline-block; width: 100px; height: 28px; }']
 })
-export class SparklineComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() data: number[] = [];
-  @Input() positive = true;
+export class SparklineComponent implements AfterViewInit, OnDestroy {
+  data = input<number[]>([]);
+  positive = input(true);
 
-  @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
   private chart?: Chart;
 
+  constructor() {
+    effect(() => {
+      this.render(this.data(), this.positive());
+    });
+  }
+
   ngAfterViewInit(): void {
-    this.render();
+    this.render(this.data(), this.positive());
   }
 
-  ngOnChanges(): void {
-    this.render();
-  }
-
-  private render(): void {
-    if (!this.canvasRef) return;
+  private render(data: number[], positive: boolean): void {
+    const canvas = this.canvasRef()?.nativeElement;
+    if (!canvas) return;
     this.chart?.destroy();
-    const color = this.positive ? '#1baf7a' : '#e34948';
-    this.chart = new Chart(this.canvasRef.nativeElement, {
+    const color = positive ? '#1baf7a' : '#e34948';
+    this.chart = new Chart(canvas, {
       type: 'line',
       data: {
-        labels: this.data.map((_, i) => String(i)),
+        labels: data.map((_, i) => String(i)),
         datasets: [
           {
-            data: this.data,
+            data,
             borderColor: color,
             borderWidth: 1.5,
             pointRadius: 0,

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
@@ -20,26 +21,27 @@ export class OverviewComponent implements OnInit {
   summary?: Summary;
   insights?: Insights;
 
-  constructor(
-    private api: ApiService,
-    public denom: DenomService
-  ) {}
+  denom = inject(DenomService);
+  private api = inject(ApiService);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     forkJoin({
       summary: this.api.getSummary(),
       insights: this.api.getInsights()
-    }).subscribe({
-      next: ({ summary, insights }) => {
-        this.summary = summary;
-        this.insights = insights;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = err.message ?? 'Failed to load data';
-        this.loading = false;
-      }
-    });
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ summary, insights }) => {
+          this.summary = summary;
+          this.insights = insights;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = err.message ?? 'Failed to load data';
+          this.loading = false;
+        }
+      });
   }
 
   get lastUpdated(): string {

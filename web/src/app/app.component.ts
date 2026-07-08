@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ApiService } from './core/api.service';
 import { Denom, DenomService } from './core/denom.service';
@@ -14,11 +14,8 @@ import { Summary } from './core/models';
 export class AppComponent implements OnInit {
   readonly denoms: Denom[] = ['exalted', 'chaos', 'divine'];
   summary = signal<Summary | null>(null);
-
-  constructor(
-    public denom: DenomService,
-    private api: ApiService
-  ) {}
+  denom = inject(DenomService);
+  private api = inject(ApiService);
 
   ngOnInit(): void {
     this.api.getSummary().subscribe((s) => {

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/api.service';
@@ -49,31 +50,34 @@ export class CurrencyComponent implements OnInit {
     return filterByRange(this.history, this.historyRange);
   }
 
-  constructor(
-    private api: ApiService,
-    public denom: DenomService
-  ) {}
+  denom = inject(DenomService);
+  private api = inject(ApiService);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
-    this.api.getMeta().subscribe((meta: Meta) => {
-      this.types = meta.currencyExchangeTypes;
+    this.api.getMeta()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((meta: Meta) => {
+        this.types = meta.currencyExchangeTypes;
     });
     this.load();
   }
 
   load(): void {
     this.loading = true;
-    this.api.getCurrency(this.selectedType).subscribe({
-      next: (res) => {
-        this.lines = res.lines;
-        this.applySort();
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = err.message ?? 'Failed to load';
-        this.loading = false;
-      }
-    });
+    this.api.getCurrency(this.selectedType)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.lines = res.lines;
+          this.applySort();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = err.message ?? 'Failed to load';
+          this.loading = false;
+        }
+      });
   }
 
   onTypeChange(): void {
@@ -111,8 +115,10 @@ export class CurrencyComponent implements OnInit {
   select(line: CurrencyLine): void {
     this.selected = line;
     this.history = [];
-    this.api.getCurrencyHistory(line.item_id).subscribe((res) => {
-      this.history = res.points;
-    });
+    this.api.getCurrencyHistory(line.item_id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((res) => {
+        this.history = res.points;
+      });
   }
 }

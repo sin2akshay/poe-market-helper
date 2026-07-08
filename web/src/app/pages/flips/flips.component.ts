@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/api.service';
@@ -45,10 +46,9 @@ export class FlipsComponent implements OnInit {
     return this.snipes.filter((l) => this.matches(l.name, l.category));
   }
 
-  constructor(
-    private api: ApiService,
-    public denom: DenomService
-  ) {}
+  denom = inject(DenomService);
+  private api = inject(ApiService);
+  private destroyRef = inject(DestroyRef);
 
   ngOnInit(): void {
     this.load();
@@ -64,6 +64,7 @@ export class FlipsComponent implements OnInit {
         maxListings: this.maxListings,
         limit: 30
       })
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
           this.currencies = res.currencies;
