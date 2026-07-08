@@ -17,12 +17,12 @@ flowchart LR
     PN[poe.ninja PoE2 API] -->|src/poeninja/client.ts| INGEST[src/ingest.ts]
     INGEST --> DB[(data/poe2-economy.sqlite)]
     DB -->|src/db.ts| SERVER[src/server.ts<br/>REST API :4300]
-    SERVER -->|JSON /api/*| ANGULAR[Angular 19 SPA]
+    SERVER -->|JSON /api/*| ANGULAR[Angular 22 SPA]
     SERVER -->|static| ANGULAR
 ```
 
 - **Backend**: Zero-dependency Node 24 — native TypeScript execution, `node:sqlite`, `node:http`. No build step, no ORM, no framework.
-- **Frontend**: Angular 19 standalone components + Chart.js (hand-wrapped, no `ng2-charts`).
+- **Frontend**: Angular 22 standalone components with signal inputs/outputs, `effect()`, `inject()`, and `takeUntilDestroyed()`. Chart.js hand-wrapped (no `ng2-charts`).
 - **Database**: Single SQLite file tracking every snapshot ever taken — two tables, 14 currency types, 9 unique-item categories.
 
 ## 🚀 Quick Start
@@ -96,9 +96,9 @@ poe/
 │   ├── fetch-assets.ts     # Icon downloader (trade-site static metadata)
 │   ├── query.ts            # CLI report
 │   └── poeninja/           # poe.ninja API client + types
-├── web/                    # Angular 19 dashboard
+├── web/                    # Angular 22 dashboard
 │   └── src/app/
-│       ├── core/           # API service, models, denomination service
+│       ├── core/           # API service, models, denomination service, pipe
 │       ├── pages/          # overview, currency, items, flips, guide
 │       └── shared/         # Chart components, range picker
 ├── data/
@@ -120,7 +120,15 @@ poe/
 - **No scheduling** — ingest is manual by design. History only accumulates when you run it.
 - **Single league** — auto-picks the current softcore challenge league.
 - **`node:sqlite` is experimental** — stable for this use case, but a Node upgrade could change its API.
-- **No tests** — personal tool, verified via manual end-to-end checks.
+
+## 🧪 Tests
+
+```sh
+cd web && npm test
+```
+
+67 unit tests covering services, pipes, shared components, and page components.
+Runs via Karma + Jasmine in headless Chrome.
 
 ## 📚 Further Reading
 

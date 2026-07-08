@@ -22,11 +22,11 @@ too limited for an idea.
 - [09-poe2fun-strategy-notes.md](09-poe2fun-strategy-notes.md) — a certain community flip tool's feature set, buy/sell-spread methodology, and why our current data source can't fully replicate it
 - [10-implementation.md](10-implementation.md) — architecture, DB schema, full API reference, and Angular app structure for the actual ingestion pipeline + dashboard built in this repo
 
-## What's built (as of 2026-07-07)
+## What's built (as of 2026-07-09)
 
-This repo now has a working personal PoE2 economy tracker, not just research:
-ingestion pipeline (poe.ninja → SQLite) + REST API + Angular dashboard with
-four views (Overview, Currency, Unique items, Flip finder). See the root
+This repo has a working personal PoE2 economy tracker, not just research:
+ingestion pipeline (poe.ninja → SQLite) + REST API + Angular 22 dashboard with
+five views (Overview, Currency, Unique items, Flip finder, Guide). See the root
 [README.md](../README.md) for how to run it and
 [10-implementation.md](10-implementation.md) for how it's built.
 

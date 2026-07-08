@@ -1,6 +1,6 @@
 # Implementation Notes — what's actually built
 
-This documents the working system in this repo, as of 2026-07-07. See
+This documents the working system in this repo, as of 2026-07-09. See
 [08-poe2-market-data-landscape.md](08-poe2-market-data-landscape.md) for why
 these particular choices (poe.ninja, phased approach) were made, and
 [09-poe2fun-strategy-notes.md](09-poe2fun-strategy-notes.md) for how this
@@ -99,8 +99,8 @@ headers) while enriching every API line's `icon` field with the local path.
 - Files land in `data/assets/<sha1-prefix>.png` plus `manifest.json`
   (slug→file, source-url→file, and slug→display-name maps). Re-runs only
   download missing files; the server hot-reloads the manifest by mtime so no
-  restart is needed. `data/assets/` is gitignored (fully re-fetchable).
-  Re-run after new leagues/patches introduce items.
+  restart is needed. `data/assets/` is tracked in the repo (~1,080 icons,
+  ~14 MB) so icons are available on GitHub. Re-run after new leagues.
 
 ## Display names & UX conventions
 
@@ -174,6 +174,25 @@ with this Node/Angular combo, so chart components wrap Chart.js by hand).
 - **Get fresh data**: `npm run ingest` any time; no restart needed, the
   server reads the DB fresh on every request.
 
+## Testing
+
+The Angular app has **67 unit tests** across 10 spec files:
+
+| Suite | Coverage |
+|---|---|
+| `denom.service.spec.ts` | Denomination switching, rate computation, `convert()`, `formatNumber()` precision tiers, `format()` |
+| `api.service.spec.ts` | All 8 endpoints, query param construction, URL encoding |
+| `type-name.pipe.spec.ts` | CamelCase splitting, null/empty/acronym edge cases |
+| `app.component.spec.ts` | Creation, brand, navigation links, `label()` |
+| `sparkline.component.spec.ts` | Canvas rendering, Chart.js registration, signal inputs |
+| `range-picker.component.spec.ts` | Four range buttons, default selection, click emission |
+| `overview.component.spec.ts` | Loading state, data fetching, trend calculation |
+| `currency.component.spec.ts` | Meta/category loading, sort order, search filter, reload |
+| `flips.component.spec.ts` | Data loading, search filter, param changes on reload |
+| `guide.component.spec.ts` | Creation, heading rendering |
+
+Run with `cd web && npm test` (Karma + Jasmine, headless Chrome).
+
 ## Known gaps / deliberately out of scope
 
 - **No scheduling** — per explicit user preference, nothing runs `ingest`
@@ -186,5 +205,3 @@ with this Node/Angular combo, so chart components wrap Chart.js by hand).
   its output as an executable trade signal without checking the trade site.
 - **Single league only** — `CONFIG.league` auto-picks the current softcore
   challenge league; there's no UI to switch leagues or compare across them.
-- **No tests** — this is a personal tool; correctness was verified by manual
-  end-to-end browser checks (see task history), not automated tests.
