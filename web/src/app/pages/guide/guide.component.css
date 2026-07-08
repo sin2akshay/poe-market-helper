@@ -1,0 +1,73 @@
+.guide {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.guide h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.intro {
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0 0 24px;
+}
+
+.strategy,
+.reading,
+.checklist {
+  margin-bottom: 16px;
+}
+
+.strategy h2,
+.reading h2,
+.checklist h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 15.5px;
+  margin: 0 0 10px;
+}
+
+.strategy p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  margin: 0 0 10px;
+}
+
+.strategy p:last-child {
+  margin-bottom: 0;
+}
+
+.how {
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+}
+
+.risk {
+  border-left: 3px solid var(--negative);
+  padding-left: 12px;
+  color: var(--text-muted);
+}
+
+.reading ul,
+.checklist ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.reading li,
+.checklist li {
+  font-size: 13.5px;
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+
+.checklist .muted {
+  font-size: 12px;
+  margin: 12px 0 0;
+  line-height: 1.6;
+}

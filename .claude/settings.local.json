@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.pathofexile.com)",
+      "WebSearch",
+      "WebFetch(domain:poe.ninja)",
+      "Bash(curl -s -A \"OAuth poe-economy-research/0.1 \\(contact: rock.sapphire@gmail.com\\)\" \"https://poe.ninja/poe2/api/economy/leagues\")",
+      "Bash(curl -s -A \"OAuth poe-economy-research/0.1 \\(contact: rock.sapphire@gmail.com\\)\" \"https://poe.ninja/poe2/api/economy/exchange/current/overview?league=Runes%20of%20Aldur&type=Currency\")",
+      "Bash(curl -s -A \"OAuth poe-economy-research/0.1 \\(contact: rock.sapphire@gmail.com\\)\" \"https://poe.ninja/poe2/api/economy/stash/current/item/overview?league=Runes%20of%20Aldur&type=UniqueWeapons\")",
+      "Bash(npm -v)",
+      "Bash(node -e \"const {DatabaseSync} = require\\('node:sqlite'\\); const db = new DatabaseSync\\(':memory:'\\); db.exec\\('CREATE TABLE t\\(x INTEGER\\)'\\); console.log\\('node:sqlite works'\\)\")",
+      "Bash(node --experimental-sqlite -e \"console.log\\('flag ok'\\)\")",
+      "Bash(npm run *)",
+      "WebFetch(domain:poe2fun.com)",
+      "Bash(curl -s http://localhost:4300/api/meta)",
+      "Bash(npx -y @angular/cli@latest version)",
+      "Bash(npx -y @angular/cli@19 version)",
+      "Bash(curl -s http://localhost:4300/api/insights)",
+      "Bash(curl -s http://localhost:4300/api/summary)",
+      "Bash(curl -s -A \"PoE2EconomyTracker/0.1.0 \\(contact: rock.sapphire@gmail.com\\)\" \"https://poe.ninja/poe2/api/economy/exchange/current/overview?league=Runes%20of%20Aldur&type=Currency\")",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('core.items count:', j.core.items.length\\);console.log\\('lines count:', j.lines.length\\);console.log\\('sample core.items:', JSON.stringify\\(j.core.items.slice\\(0,5\\),null,1\\).slice\\(0,800\\)\\);}\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const m=require\\('./data/assets/manifest.json'\\); console.log\\('names:', Object.keys\\(m.names\\).length\\); console.log\\('samples:', m.names['divine'], '|', m.names['hinekoras-lock'], '|', m.names['greater-orb-of-transmutation'], '|', m.names['annul']\\);\")"
+    ]
+  }
+}

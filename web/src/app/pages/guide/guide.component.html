@@ -1,0 +1,199 @@
+<div class="guide">
+  <h1>Making money with this data</h1>
+  <p class="muted intro">
+    Every strategy below is a real, community-proven way to earn currency in PoE2, tied to the
+    dashboard section that supports it. Two things to know about the data first: values refresh
+    from poe.ninja roughly <strong>hourly</strong>, and the "7-period change" sparklines are a
+    <strong>fixed window from poe.ninja</strong> — while the history charts on the
+    <a routerLink="/currency">Currency</a> and <a routerLink="/items">Unique items</a> pages grow
+    with every snapshot you ingest, so run <code>npm run ingest</code> regularly to make the
+    longer time ranges meaningful.
+  </p>
+
+  <div class="card strategy">
+    <h2>1. Currency Exchange arbitrage <span class="badge">low risk · steady</span></h2>
+    <p>
+      The in-game Currency Exchange is a real order book, which means real bid/ask gaps. Find a
+      pair where the spread between buy and sell orders is 5–10%+, place a buy order slightly
+      below market, resell slightly above, repeat and reinvest. Patient orders routinely fill
+      5–15% below market.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/flips">Flip finder's</a> Currency churn table.
+      High volume is the whole game — a wide margin on a dead market never fills. Movement in
+      either direction is your trigger: a dip on a high-volume market is an entry, not a warning.
+      Cross-check the <a routerLink="/">Overview's</a> Most volatile list — volatility on liquid
+      markets is repeated entry/exit opportunities.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> meta shifts. One popular build guide can repriced an orb overnight.
+      Prefer many small flips over one big position, and check the sparkline direction before
+      committing.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>2. Multi-hop conversion chains <span class="badge">medium effort · higher margins</span></h2>
+    <p>
+      Direct A→B flips get competed down fast. Chains (A→B→C→A) often retain 20–60% total margin
+      because fewer traders bother with the math. Example from the community: buying catalysts at
+      7.2 per exalt and selling at 6 per exalt is ~20% per cycle — chaining through a third
+      currency can push it further.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/currency">Currency page's</a> "Best pair" column —
+      it shows each currency's highest-volume trading pair and rate, which is exactly the graph
+      you need to spot chain steps. The denomination toggle (top right) lets you sanity-check each
+      leg in a common unit.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> each hop adds fill time; rates can move mid-chain. Keep chains to
+      2–3 hops on high-volume pairs.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>3. Liquid unique flipping <span class="badge">medium risk · scalable</span></h2>
+    <p>
+      Buy popular uniques that are rising in demand (new build guide, patch buff, league meta
+      settling) and resell into the rise. The key discipline: only flip items with plenty of
+      listings — that's what guarantees you can exit.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/flips">Flip finder's</a> Liquid item movers table
+      (rising price, ≥30 listings) and the <a routerLink="/">Overview's</a> "Unique items heating
+      up" list (value ≥ 0.5 div — meaningful money, real liquidity). Click any item on the
+      <a routerLink="/items">Unique items</a> page to see its price history across your snapshots.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> you're competing with everyone reading the same trend. Enter early
+      in the sparkline's rise, not after +500%.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>4. Scarce snipes <span class="badge">high risk · high margin</span></h2>
+    <p>
+      Items with very few listings and a spiking price: supply is drying up, and whoever holds
+      the remaining copies sets the price. Buy the underpriced listings before others notice,
+      relist high, wait.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/flips">Flip finder's</a> Scarce snipes table.
+      Treat these as position trades: money can sit for days, and with under ~10 listings the
+      "market price" may be one person's opinion. Verify actual listings on the official trade
+      site before buying anything.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> illiquidity cuts both ways — the same thin market that made the
+      spike can strand your relist. Never park money you need this week in a snipe.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>5. Value-add crafting flips <span class="badge">game knowledge pays</span></h2>
+    <p>
+      Buy cheap, add value, resell: quality up a popular unique, add a good corruption enchant,
+      or gamble Vaal Orb rerolls on uniques whose corrupted outcomes sell far above the base
+      (+1 socket, above-max rolls). The margin comes from knowing which outcomes the market pays for.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/items">Unique items</a> page to compare corrupted
+      vs clean pricing within a category, and the Essences/Omens/Runes categories on the
+      <a routerLink="/currency">Currency page</a> to time buying your crafting inputs when
+      they dip.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> Vaal outcomes are random — this is profitable in aggregate, not per
+      item. Budget for bricks.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>6. Farm what the market wants <span class="badge">for players, not traders</span></h2>
+    <p>
+      Most currency is still made by playing — the edge is farming the mechanic whose loot is
+      currently expensive. This league's community consensus: Expedition (with rune-slot
+      encounters) has the biggest loot explosions, Abyss is the most consistent per-map earner,
+      Ritual is the best zero-investment start (petition splinters), and Breach+Delirium gives the
+      highest monster density for raw drops.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/">Overview's</a> Category pulse table. A category
+      with high total volume and positive average change (e.g. Ritual or Expedition trending up)
+      means the market is paying for that mechanic's drops right now. Check it after each patch —
+      farming yesterday's meta is the classic way to earn half rate.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> everyone farms the meta, which eventually crashes the very prices
+      that made it attractive. Rising volume + falling price = the crash is starting.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>7. The divine hedge — league-cycle timing <span class="badge">macro play</span></h2>
+    <p>
+      Exalts inflate over a league as everyone farms them; divines (and mirror-tier currency)
+      hold value. Early league: sell leveling uniques and early drops at peak prices, convert
+      savings to divines. Mid league: spend on your own gear while prices are sane. Late league:
+      flip aggressively or wind down — item prices decay toward league end while hard currency
+      holds.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/">Overview's</a> "1 divine = X ex" card with its
+      trend-since-first-snapshot, and the market breadth bars. Divine rising in exalted terms =
+      your exalt savings are melting — convert. Broad item deflation with currency inflation is
+      the classic mid/late-league signature.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> none really — this is about not losing money passively. The only
+      mistake is holding a big exalt pile for weeks.
+    </p>
+  </div>
+
+  <div class="card strategy">
+    <h2>8. Bulk premiums <span class="badge">low effort side income</span></h2>
+    <p>
+      Bulk buyers pay a premium for one-stop stacks (maps, essences, splinters, soul cores).
+      Aggregate small cheap stacks from many sellers, relist as bulk at 10–20% over per-unit
+      price. Works because buyers value their time over the spread.
+    </p>
+    <p class="how">
+      <strong>Use:</strong> the <a routerLink="/currency">Currency page</a> per category —
+      fragments, essences, and splinter-type currencies with steady volume are the natural bulk
+      candidates. The volume column tells you if there's enough flow to aggregate.
+    </p>
+    <p class="risk">
+      <strong>Risk:</strong> minimal, just slow capital turnover if you overpay while aggregating.
+    </p>
+  </div>
+
+  <div class="card reading">
+    <h2>Reading the signals</h2>
+    <ul>
+      <li><strong>Volume</strong> — the most important number for any flip. Real trade volume (currencies only) means you can enter and exit. No volume = no flip, whatever the margin looks like.</li>
+      <li><strong>Listings</strong> — items don't have true volume data; listing count is the supply proxy. Many listings = liquid and price-trustworthy; few listings = scarce, risky, and possibly mispriced.</li>
+      <li><strong>7-period change + sparkline</strong> — poe.ninja's fixed trend window. Shape matters: steady climb = durable demand; single spike = probably one trade or a manipulation on a thin market.</li>
+      <li><strong>Volatility (±%)</strong> — average swing size per period. On liquid markets, volatility is flip opportunity; on thin markets it's just noise.</li>
+      <li><strong>Breadth</strong> — how much of the whole market is rising vs falling. Broad currency inflation + item deflation tells you to hold divines, not gear.</li>
+      <li><strong>Category pulse</strong> — whole-mechanic trends. Farm rising categories, buy crafting inputs from falling ones.</li>
+    </ul>
+  </div>
+
+  <div class="card checklist">
+    <h2>Before you commit currency to any flip</h2>
+    <ul>
+      <li>Is the market liquid enough to exit? (volume for currencies, listings for items)</li>
+      <li>Is the trend from many trades or one? (sparkline shape, volume behind the move)</li>
+      <li>Did you verify the live price on the official trade site? This dashboard is aggregate data with up to an hour of lag.</li>
+      <li>Is your position size small enough that a meta shift won't hurt?</li>
+      <li>Are you early to the move, or buying someone else's exit?</li>
+    </ul>
+    <p class="muted">
+      Sources this guide draws on: community trading guides from Maxroll ("Flipping With The
+      Currency Exchange"), Mobalytics ("The ABC of Currency Flipping"), and current-league farming
+      consensus (Expedition/Abyss/Ritual/Breach strategies). Prices and metas shift every patch —
+      re-check before relying on specifics.
+    </p>
+  </div>
+</div>

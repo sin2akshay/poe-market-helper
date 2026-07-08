@@ -1,0 +1,46 @@
+.toolbar {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.toolbar label {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--surface-2);
+}
+
+.history-panel {
+  margin-bottom: 16px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.history-header strong {
+  flex: 1;
+}
+
+.history-header button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+}

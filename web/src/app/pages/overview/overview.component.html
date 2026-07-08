@@ -1,0 +1,202 @@
+@if (loading) {
+  <p class="muted">Loading snapshot…</p>
+} @else if (error) {
+  <p class="negative">{{ error }}</p>
+  <p class="muted">Make sure you've run <code>npm run ingest</code> at least once.</p>
+} @else if (insights) {
+  <div class="kpi-row">
+    <div class="card kpi">
+      <p class="kpi-label">1 divine =</p>
+      <p class="kpi-value">
+        {{ insights.rates.exaltedPerDivine ? denom.formatNumber(insights.rates.exaltedPerDivine) : '—' }} ex
+      </p>
+      @if (divineTrendPct !== null) {
+        <p class="kpi-sub" [class.positive]="divineTrendPct >= 0" [class.negative]="divineTrendPct < 0">
+          {{ divineTrendPct >= 0 ? '+' : '' }}{{ divineTrendPct.toFixed(2) }}% since first snapshot
+        </p>
+      } @else {
+        <p class="kpi-sub muted">need 2+ snapshots for trend</p>
+      }
+    </div>
+    <div class="card kpi">
+      <p class="kpi-label">1 divine =</p>
+      <p class="kpi-value">
+        {{ insights.rates.chaosPerDivine ? denom.formatNumber(insights.rates.chaosPerDivine) : '—' }} chaos
+      </p>
+      <p class="kpi-sub muted">chaos is the mid-tier unit in PoE2</p>
+    </div>
+    <div class="card kpi">
+      <p class="kpi-label">Currency market breadth</p>
+      <p class="kpi-value">
+        <span class="positive">{{ insights.breadth.currency.rising }}↑</span>
+        <span class="kpi-sep">/</span>
+        <span class="negative">{{ insights.breadth.currency.falling }}↓</span>
+      </p>
+      <div class="breadth-bar" aria-hidden="true">
+        @if (breadthPct(insights.breadth.currency.rising, insights.breadth.currency.falling, insights.breadth.currency.flat); as b) {
+          <span class="up" [style.width.%]="b.up"></span>
+          <span class="down" [style.width.%]="b.down"></span>
+        }
+      </div>
+    </div>
+    <div class="card kpi">
+      <p class="kpi-label">Unique item breadth</p>
+      <p class="kpi-value">
+        <span class="positive">{{ insights.breadth.items.rising }}↑</span>
+        <span class="kpi-sep">/</span>
+        <span class="negative">{{ insights.breadth.items.falling }}↓</span>
+      </p>
+      <div class="breadth-bar" aria-hidden="true">
+        @if (breadthPct(insights.breadth.items.rising, insights.breadth.items.falling, insights.breadth.items.flat); as b) {
+          <span class="up" [style.width.%]="b.up"></span>
+          <span class="down" [style.width.%]="b.down"></span>
+        }
+      </div>
+    </div>
+    <div class="card kpi">
+      <p class="kpi-label">Data</p>
+      <p class="kpi-value">{{ summary?.snapshotCount }} snapshots</p>
+      <p class="kpi-sub muted">updated {{ lastUpdated }}</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>Top gainers</h2>
+        <span class="hint">liquid currencies, 7-period change</span>
+      </div>
+      @for (line of insights.gainers; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.display_name" loading="lazy" />}{{ line.display_name }}</span>
+          <span class="badge">{{ line.overview_type | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val positive">+{{ (line.spark_total_change ?? 0).toFixed(1) }}%</span>
+          <app-sparkline [data]="line.sparkline" [positive]="true" />
+        </div>
+      } @empty {
+        <p class="muted">Nothing rising with meaningful volume right now.</p>
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Top losers</h2>
+        <span class="hint">liquid currencies, 7-period change</span>
+      </div>
+      @for (line of insights.losers; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.display_name" loading="lazy" />}{{ line.display_name }}</span>
+          <span class="badge">{{ line.overview_type | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val negative">{{ (line.spark_total_change ?? 0).toFixed(1) }}%</span>
+          <app-sparkline [data]="line.sparkline" [positive]="false" />
+        </div>
+      } @empty {
+        <p class="muted">Nothing falling with meaningful volume right now.</p>
+      }
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>Volume leaders</h2>
+        <span class="hint">where the trading actually happens</span>
+      </div>
+      @for (line of insights.volumeLeaders; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.display_name" loading="lazy" />}{{ line.display_name }}</span>
+          <span class="badge">{{ line.overview_type | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val">{{ fmtVolume(line.volume_primary_value) }} {{ denom.suffix() }} vol</span>
+        </div>
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Most volatile</h2>
+        <span class="hint">largest per-period swings, liquid only</span>
+      </div>
+      @for (line of insights.mostVolatile; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.display_name" loading="lazy" />}{{ line.display_name }}</span>
+          <span class="badge">{{ line.overview_type | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val">±{{ line.volatility }}%</span>
+          <app-sparkline [data]="line.sparkline" [positive]="(line.spark_total_change ?? 0) >= 0" />
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Category pulse</h2>
+      <span class="hint">volume-ranked; avg change shows where whole markets are moving</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th class="num">Tracked</th>
+          <th class="num">Rising</th>
+          <th class="num">Falling</th>
+          <th class="num">Avg change</th>
+          <th class="num">Total volume ({{ denom.suffix() }})</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (cat of insights.categoryPulse; track cat.type) {
+          <tr>
+            <td>{{ cat.type | typeName }}</td>
+            <td class="num muted">{{ cat.count }}</td>
+            <td class="num positive">{{ cat.rising }}</td>
+            <td class="num negative">{{ cat.falling }}</td>
+            <td class="num" [class.positive]="cat.avgChange >= 0" [class.negative]="cat.avgChange < 0">
+              {{ cat.avgChange >= 0 ? '+' : '' }}{{ cat.avgChange }}%
+            </td>
+            <td class="num">{{ fmtVolume(cat.totalVolume) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>Unique items heating up</h2>
+        <span class="hint">worth ≥ 0.5 div, ≥ 5 listings</span>
+      </div>
+      @for (line of insights.itemGainers; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.name" loading="lazy" />}{{ line.name }}</span>
+          <span class="badge">{{ line.category | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val positive">+{{ (line.spark_total_change ?? 0).toFixed(1) }}%</span>
+        </div>
+      } @empty {
+        <p class="muted">No meaningful item gainers right now.</p>
+      }
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Unique items cooling off</h2>
+        <span class="hint">worth ≥ 0.5 div, ≥ 5 listings</span>
+      </div>
+      @for (line of insights.itemLosers; track line.item_id) {
+        <div class="list-row">
+          <span class="grow name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.name" loading="lazy" />}{{ line.name }}</span>
+          <span class="badge">{{ line.category | typeName }}</span>
+          <span class="val muted">{{ denom.format(line.primary_value) }}</span>
+          <span class="val negative">{{ (line.spark_total_change ?? 0).toFixed(1) }}%</span>
+        </div>
+      } @empty {
+        <p class="muted">No meaningful item losers right now.</p>
+      }
+    </div>
+  </div>
+}

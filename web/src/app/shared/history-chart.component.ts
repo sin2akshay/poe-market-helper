@@ -1,0 +1,78 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  ViewChild
+} from '@angular/core';
+import { Chart } from 'chart.js';
+import { HistoryPoint } from '../core/models';
+
+@Component({
+  selector: 'app-history-chart',
+  standalone: true,
+  template: `
+    <div style="position: relative; height: 220px;">
+      <canvas #canvas role="img" [attr.aria-label]="'Price history for ' + label"></canvas>
+    </div>
+  `
+})
+export class HistoryChartComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @Input() points: HistoryPoint[] = [];
+  @Input() label = '';
+
+  @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
+  private chart?: Chart;
+
+  ngAfterViewInit(): void {
+    this.render();
+  }
+
+  ngOnChanges(): void {
+    this.render();
+  }
+
+  private render(): void {
+    if (!this.canvasRef) return;
+    this.chart?.destroy();
+    if (this.points.length === 0) return;
+
+    const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const axisColor = isDark ? '#c3c2b7' : '#898781';
+    const gridColor = isDark ? '#2c2c2a' : '#e1e0d9';
+
+    this.chart = new Chart(this.canvasRef.nativeElement, {
+      type: 'line',
+      data: {
+        labels: this.points.map((p) => new Date(p.fetched_at).toLocaleString()),
+        datasets: [
+          {
+            label: this.label,
+            data: this.points.map((p) => p.primary_value),
+            borderColor: '#2a78d6',
+            backgroundColor: 'rgba(42,120,214,0.1)',
+            borderWidth: 2,
+            pointRadius: 3,
+            tension: 0.25,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: axisColor, maxRotation: 0 }, grid: { display: false } },
+          y: { ticks: { color: axisColor }, grid: { color: gridColor } }
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.chart?.destroy();
+  }
+}

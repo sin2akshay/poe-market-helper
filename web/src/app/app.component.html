@@ -1,0 +1,32 @@
+<header class="topbar">
+  <div class="brand-block">
+    <span class="brand">PoE2 Economy</span>
+    @if (summary(); as s) {
+      <span class="league-tag">{{ s.league }}</span>
+    }
+  </div>
+  <nav>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Overview</a>
+    <a routerLink="/currency" routerLinkActive="active">Currency</a>
+    <a routerLink="/items" routerLinkActive="active">Unique items</a>
+    <a routerLink="/flips" routerLinkActive="active">Flip finder</a>
+    <a routerLink="/guide" routerLinkActive="active">Guide</a>
+  </nav>
+  <div class="header-right">
+    <div class="segmented" role="group" aria-label="Display currency">
+      @for (d of denoms; track d) {
+        <button
+          type="button"
+          [class.selected]="denom.denom() === d"
+          (click)="denom.set(d)"
+        >
+          {{ label(d) }}
+        </button>
+      }
+    </div>
+  </div>
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>

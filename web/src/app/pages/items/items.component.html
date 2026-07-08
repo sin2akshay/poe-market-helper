@@ -1,0 +1,83 @@
+<div class="toolbar">
+  <label>
+    Category
+    <select [(ngModel)]="selectedType" (ngModelChange)="load()">
+      @for (t of types; track t) {
+        <option [value]="t">{{ t | typeName }}</option>
+      }
+    </select>
+  </label>
+  <label class="search-label">
+    Search
+    <input type="search" [(ngModel)]="query" placeholder="e.g. Kaom, wand, helmet…" autocomplete="off" />
+  </label>
+  <label>
+    Max listings (liquidity filter)
+    <input type="number" [(ngModel)]="maxListings" (ngModelChange)="load()" placeholder="e.g. 60" />
+  </label>
+</div>
+
+@if (loading) {
+  <p class="muted">Loading…</p>
+} @else if (error) {
+  <p class="negative">{{ error }}</p>
+} @else {
+  @if (selected) {
+    <div class="card history-panel">
+      <div class="history-header">
+        <strong>{{ selected.name }}</strong>
+        <span class="muted">{{ selected.category }}</span>
+        <span class="muted range-count">{{ filteredHistory.length }} of {{ history.length }} snapshots in range</span>
+        <app-range-picker [value]="historyRange" (valueChange)="historyRange = $event" />
+        <button (click)="selected = null">Close</button>
+      </div>
+      @if (filteredHistory.length < 2) {
+        <p class="muted">
+          Not enough snapshots in this range — history grows each time you run
+          <code>npm run ingest</code>.
+        </p>
+      }
+      <app-history-chart [points]="filteredHistory" [label]="selected.name" />
+    </div>
+  }
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sortBy('name')">Item{{ arrow('name') }}</th>
+          <th>Category</th>
+          <th class="num" (click)="sortBy('value')">Value ({{ denom.suffix() }}){{ arrow('value') }}</th>
+          <th class="num" (click)="sortBy('listings')">Listings{{ arrow('listings') }}</th>
+          <th class="num" (click)="sortBy('change')">7-period change{{ arrow('change') }}</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of visibleLines; track line.item_id) {
+          <tr (click)="select(line)" class="row">
+            <td>
+              <span class="name-cell">
+                @if (line.icon) {
+                  <img class="game-icon" [src]="line.icon" [alt]="line.name" loading="lazy" />
+                }
+                {{ line.name }} @if (line.corrupted) {<span class="muted"> (corrupted)</span>}
+              </span>
+            </td>
+            <td class="muted">{{ line.category }}</td>
+            <td class="num">{{ denom.formatNumber(denom.convert(line.primary_value) ?? 0) }}</td>
+            <td class="num">{{ line.listing_count }}</td>
+            <td class="num" [class.positive]="(line.spark_total_change ?? 0) >= 0" [class.negative]="(line.spark_total_change ?? 0) < 0">
+              {{ (line.spark_total_change ?? 0) >= 0 ? '+' : '' }}{{ line.spark_total_change }}%
+            </td>
+            <td>
+              <app-sparkline [data]="line.sparkline" [positive]="(line.spark_total_change ?? 0) >= 0" />
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="muted">No matches for "{{ query }}" in {{ selectedType | typeName }}.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

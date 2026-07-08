@@ -1,0 +1,148 @@
+<div class="card disclaimer">
+  <p>
+    <strong>Heuristics, not a live order book.</strong> Real flipping wants <em>high volume</em>
+    — a liquid market you can enter and exit fast. Currencies below have true trade volume
+    from the in-game Currency Exchange; unique items only expose listing counts (a supply
+    proxy), so item liquidity is approximate. This is still poe.ninja aggregate data, not
+    live bid/ask quotes — verify on the trade site before acting.
+  </p>
+</div>
+
+<div class="toolbar">
+  <label class="search-label">
+    Search
+    <input type="search" [(ngModel)]="query" placeholder="filter all three tables…" autocomplete="off" />
+  </label>
+  <label>
+    Min % change
+    <input type="number" [(ngModel)]="minChange" (ngModelChange)="load()" />
+  </label>
+  <label>
+    Min currency volume (divine)
+    <input type="number" [(ngModel)]="minVolume" (ngModelChange)="load()" />
+  </label>
+  <label>
+    Min listings (liquid items)
+    <input type="number" [(ngModel)]="minListings" (ngModelChange)="load()" />
+  </label>
+  <label>
+    Max listings (snipes)
+    <input type="number" [(ngModel)]="maxListings" (ngModelChange)="load()" />
+  </label>
+</div>
+
+@if (loading) {
+  <p class="muted">Loading…</p>
+} @else if (error) {
+  <p class="negative">{{ error }}</p>
+} @else {
+  <div class="strategy-header">
+    <p class="section-label">Currency churn — liquid markets on the move</p>
+    <p class="muted strategy-hint">
+      Ranked by real trade volume; movement in either direction is a flip trigger (dips are
+      entries too). High volume = fast entry and exit, trustworthy prices, small margins × many trades.
+    </p>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Currency</th>
+          <th>Category</th>
+          <th class="num">Value ({{ denom.suffix() }})</th>
+          <th class="num">Volume ({{ denom.suffix() }})</th>
+          <th class="num">Change</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of visibleCurrencies; track line.item_id) {
+          <tr>
+            <td><span class="name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.display_name" loading="lazy" />}{{ line.display_name }}</span></td>
+            <td class="muted">{{ line.category | typeName }}</td>
+            <td class="num">{{ denom.formatNumber(denom.convert(line.primary_value) ?? 0) }}</td>
+            <td class="num">{{ fmtVolume(line.volume_primary_value) }}</td>
+            <td class="num" [class.positive]="line.spark_total_change >= 0" [class.negative]="line.spark_total_change < 0">
+              {{ line.spark_total_change >= 0 ? '+' : '' }}{{ line.spark_total_change }}%
+            </td>
+            <td><app-sparkline [data]="line.sparkline" [positive]="line.spark_total_change >= 0" /></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="muted">No liquid currency markets moving more than {{ minChange }}% right now.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="strategy-header">
+    <p class="section-label">Liquid item movers — rising with plenty of listings</p>
+    <p class="muted strategy-hint">
+      Enough listings to buy and resell quickly, price rising. Listing count is a supply
+      proxy, not true volume — the best available liquidity signal for items.
+    </p>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Category</th>
+          <th class="num">Value ({{ denom.suffix() }})</th>
+          <th class="num">Listings</th>
+          <th class="num">Change</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of visibleLiquidItems; track line.item_id) {
+          <tr>
+            <td><span class="name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.name" loading="lazy" />}{{ line.name }}</span></td>
+            <td class="muted">{{ line.category }}</td>
+            <td class="num">{{ denom.formatNumber(denom.convert(line.primary_value) ?? 0) }}</td>
+            <td class="num">{{ line.listing_count }}</td>
+            <td class="num positive">+{{ line.spark_total_change }}%</td>
+            <td><app-sparkline [data]="line.sparkline" [positive]="true" /></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="muted">No liquid items rising more than {{ minChange }}% right now.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="strategy-header">
+    <p class="section-label">Scarce snipes — thin supply, spiking price</p>
+    <p class="muted strategy-hint">
+      High risk / high margin: few listings means the "price" may be one lister's opinion
+      and exits are slow. Position trades, not churn.
+    </p>
+  </div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Category</th>
+          <th class="num">Value ({{ denom.suffix() }})</th>
+          <th class="num">Listings</th>
+          <th class="num">Change</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (line of visibleSnipes; track line.item_id) {
+          <tr>
+            <td><span class="name-cell">@if (line.icon) {<img class="game-icon" [src]="line.icon" [alt]="line.name" loading="lazy" />}{{ line.name }}</span></td>
+            <td class="muted">{{ line.category }}</td>
+            <td class="num">{{ denom.formatNumber(denom.convert(line.primary_value) ?? 0) }}</td>
+            <td class="num">{{ line.listing_count }}</td>
+            <td class="num positive">+{{ line.spark_total_change }}%</td>
+            <td><app-sparkline [data]="line.sparkline" [positive]="true" /></td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="muted">No scarce items spiking more than {{ minChange }}% right now.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

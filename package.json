@@ -1,0 +1,19 @@
+{
+  "name": "poe2-economy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Personal PoE2 economy data ingestion and analysis",
+  "scripts": {
+    "ingest": "node --experimental-sqlite src/ingest.ts",
+    "fetch-assets": "node --experimental-sqlite src/fetch-assets.ts",
+    "query": "node --experimental-sqlite src/query.ts",
+    "server": "node --experimental-sqlite src/server.ts",
+    "build:web": "cd web && npm run build",
+    "dev:web": "cd web && npm start",
+    "start": "npm run server"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
