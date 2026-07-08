@@ -20,7 +20,7 @@ src/ingest.ts  ──writes──▶  data/poe2-economy.sqlite  (node:sqlite)
                                      │
                         ┌────────────┴────────────┐
                         ▼                          ▼
-              serves /api/* JSON          serves web/dist/web/browser
+              serves /api/* JSON          serves web/dist/web
                         │                    (built Angular SPA)
                         ▼
               Angular app calls /api/* via ApiService (HttpClient)
@@ -123,7 +123,9 @@ headers) while enriching every API line's `icon` field with the local path.
 
 ## Angular app (`web/`)
 
-Angular 19, standalone components (no NgModules), Chart.js loaded directly
+Angular 22, standalone components (no NgModules), signal inputs/outputs,
+`effect()` for chart re-renders, `inject()` + `takeUntilDestroyed()` patterns.
+Chart.js loaded directly
 (not via `ng2-charts` — that package now requires Angular 21+, incompatible
 with this Node/Angular combo, so chart components wrap Chart.js by hand).
 
@@ -159,10 +161,9 @@ with this Node/Angular combo, so chart components wrap Chart.js by hand).
 - Dev proxy: `web/proxy.conf.json` forwards `/api` to `localhost:4300`, wired
   via `npm start` inside `web/` (`ng serve --proxy-config proxy.conf.json`).
 
-**Build output path matters**: Angular 19's esbuild-based builder emits to
-`web/dist/web/browser/` (not `web/dist/web/` directly) — `server.ts` points
-at that exact path for static serving. If a future Angular upgrade changes
-this output layout, update `WEB_DIST` in `src/server.ts`.
+**Build output path**: Angular 22's esbuild-based builder emits to
+`web/dist/web/` (the `browser` subfolder was dropped in Angular 22) —
+`server.ts` points at that exact path for static serving.
 
 ## Running it
 
