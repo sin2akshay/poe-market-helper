@@ -101,7 +101,9 @@ poe/
 │       ├── core/           # API service, models, denomination service
 │       ├── pages/          # overview, currency, items, flips, guide
 │       └── shared/         # Chart components, range picker
-├── data/                   # SQLite DB + local assets (gitignored)
+├── data/
+│   ├── assets/             # 1,079 game icons (currency + items) + manifest.json
+│   └── *.sqlite            # Database files (gitignored)
 ├── docs/                   # Full research & implementation docs
 └── package.json
 ```
