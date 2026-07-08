@@ -1,4 +1,4 @@
-# 🪙 PoE2 Economy Tracker
+# <img src="data/assets/bec83169b2973963.png" width="32" height="32" alt="Divine"/> PoE2 Economy Tracker
 
 Personal ingestion pipeline and dashboard for **Path of Exile 2** economy data.
 Snapshots currency exchange rates and unique-item valuations from
@@ -62,7 +62,7 @@ Five views at `http://localhost:4300`:
 | **Unique Items** | Same, filterable by category and listing count, with search across all items |
 | **Flip Finder** | Three liquidity-stratified discovery strategies: high-volume currency churn, liquid item flipping, and scarce-item sniping |
 
-A global **Exalted / Chaos / Divine** toggle switches display denomination
+A global toggle <img src="data/assets/b21e146bc9418724.png" width="24" height="24" alt="Exalted"/> **Exalted** / <img src="data/assets/0ae4bab06320fc9e.png" width="24" height="24" alt="Chaos"/> **Chaos** / <img src="data/assets/bec83169b2973963.png" width="24" height="24" alt="Divine"/> **Divine** switches display denomination
 everywhere — values are stored in divine, rates are derived from the snapshot
 itself. Smart precision adapts from thousands-separated integers down to 2
 significant figures for sub-0.01 values.
