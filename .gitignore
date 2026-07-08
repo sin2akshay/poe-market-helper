@@ -4,4 +4,3 @@ web/dist/
 web/.angular/
 data/*.sqlite
 data/*.sqlite-*
-data/assets/
