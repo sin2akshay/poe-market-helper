@@ -1,53 +1,131 @@
-# PoE2 Economy Tracker
+# 🪙 PoE2 Economy Tracker
 
-Personal ingestion pipeline for Path of Exile 2 economy data. Snapshots
-currency exchange rates and unique-item valuations from poe.ninja's public
-PoE2 economy API into a local SQLite database, for trend analysis and
-flip-opportunity spotting.
+Personal ingestion pipeline and dashboard for **Path of Exile 2** economy data.
+Snapshots currency exchange rates and unique-item valuations from
+[poe.ninja](https://poe.ninja)'s PoE2 economy API into a local SQLite database,
+surfaces trends and flip opportunities through a rich Angular dashboard.
 
-See [docs/](docs/README.md) for the full research this is built on — API
-capabilities, what's officially available from GGG vs. poe.ninja, and the
-verified poe.ninja schema.
+> Built on extensive research into GGG's official developer API, poe.ninja's
+> data model, and the PoE2 tooling ecosystem — see [docs/](docs/README.md).
 
-## Requirements
+---
 
-Node.js 24+ (uses native TypeScript execution and the built-in `node:sqlite`
-module — no npm install needed).
+## 🏗 Architecture
 
-## Usage
-
-```sh
-npm run ingest        # fetch a snapshot and store it in data/poe2-economy.sqlite
-npm run fetch-assets  # download item/currency icons locally (re-run after new leagues)
-npm run query         # print a quick report: biggest currency movers, thin-liquidity risers
+```mermaid
+flowchart LR
+    PN[poe.ninja PoE2 API] -->|src/poeninja/client.ts| INGEST[src/ingest.ts]
+    INGEST --> DB[(data/poe2-economy.sqlite)]
+    DB -->|src/db.ts| SERVER[src/server.ts<br/>REST API :4300]
+    SERVER -->|JSON /api/*| ANGULAR[Angular 19 SPA]
+    SERVER -->|static| ANGULAR
 ```
 
-Run `ingest` periodically (e.g. hourly via cron / Windows Task Scheduler) to
-build up history — poe.ninja's underlying PoE2 data only refreshes about once
-an hour, so there's no benefit to running it more often than that.
+- **Backend**: Zero-dependency Node 24 — native TypeScript execution, `node:sqlite`, `node:http`. No build step, no ORM, no framework.
+- **Frontend**: Angular 19 standalone components + Chart.js (hand-wrapped, no `ng2-charts`).
+- **Database**: Single SQLite file tracking every snapshot ever taken — two tables, 14 currency types, 9 unique-item categories.
 
-### Dashboard (Angular)
+## 🚀 Quick Start
 
-Build once, then run anytime:
+**Requirements**: Node.js 24+
 
 ```sh
-npm run build:web   # builds web/ into web/dist/web/browser
-npm start            # serves the API + the built dashboard on http://localhost:4300
+# 1. Ingest your first snapshot (poe.ninja refreshes ~hourly)
+npm run ingest
+
+# 2. Download item/currency icons (re-run after new leagues)
+npm run fetch-assets
+
+# 3. Build & launch the dashboard
+npm run build:web
+npm start                # → http://localhost:4300
 ```
 
-Open `http://localhost:4300` — five views: Guide (how to turn each dashboard
-signal into an in-game money-making strategy), Overview (an insights dashboard:
-divine exchange rates with trend, market breadth, liquid gainers/losers,
-volume leaders, volatility ranking, category pulse, and item movers), Currency
-(sortable table with per-currency history chart), Unique items (same,
-filterable by category and listing count), and Flip finder (the thin-liquidity
-+ rising-trend heuristic, with an explicit disclaimer about how it differs from
-poe2fun.com's real bid/ask spread — see
-[docs/09-poe2fun-strategy-notes.md](docs/09-poe2fun-strategy-notes.md)).
+```sh
+# For frontend dev with hot reload:
+npm run server           # terminal 1
+npm run dev:web          # terminal 2 (proxies /api → :4300)
 
-A global Exalted / Chaos / Divine toggle in the header switches the display
-denomination everywhere (values are stored in divine; rates are derived from
-the snapshot itself).
+# Quick CLI report without the browser:
+npm run query
+```
+
+## 📊 Dashboard
+
+Five views at `http://localhost:4300`:
+
+| View | Purpose |
+|---|---|
+| **Guide** | 8 researched money-making strategies tied directly to dashboard signals, plus a pre-flip checklist and signals reference |
+| **Overview** | Market pulse: divine exchange rate & trend, market breadth, top gainers/losers, volume leaders, volatility ranking, category heat |
+| **Currency** | Sortable table of all 14 currency types with inline sparklines, click-through to full history charts |
+| **Unique Items** | Same, filterable by category and listing count, with search across all items |
+| **Flip Finder** | Three liquidity-stratified discovery strategies: high-volume currency churn, liquid item flipping, and scarce-item sniping |
+
+A global **Exalted / Chaos / Divine** toggle switches display denomination
+everywhere — values are stored in divine, rates are derived from the snapshot
+itself. Smart precision adapts from thousands-separated integers down to 2
+significant figures for sub-0.01 values.
+
+## 🔌 API Reference
+
+All endpoints are `GET`, CORS-open, JSON. No auth — localhost-only.
+
+| Endpoint | Key params | Description |
+|---|---|---|
+| `/api/meta` | — | League name, category lists for UI filters |
+| `/api/summary` | — | Latest snapshot stats, divine rates, row counts |
+| `/api/currency` | `type?`, `fetchedAt?` | All currencies for a category, with parsed sparklines |
+| `/api/currency/history` | `id` | Full time series for one currency across all snapshots |
+| `/api/items` | `type?`, `sort?`, `dir?`, `limit?`, `maxListings?` | Unique items, sortable & filterable |
+| `/api/items/history` | `id` | Full time series for one item |
+| `/api/flips` | `minChange?`, `maxListings?`, `minVolume?`, `limit?` | Three flip-discovery strategies (see dashboard) |
+| `/api/insights` | `fetchedAt?` | Derived analytics: rates, breadth, volatility, gainers/losers, volume leaders, category pulse |
+
+See [docs/10-implementation.md](docs/10-implementation.md) for the full schema and query semantics.
+
+## 📁 Project Structure
+
+```
+poe/
+├── src/
+│   ├── ingest.ts          # poe.ninja → SQLite snapshot pipeline
+│   ├── server.ts           # REST API + static dashboard server
+│   ├── db.ts               # SQLite read helpers
+│   ├── config.ts           # League, categories, poe.ninja endpoints
+│   ├── fetch-assets.ts     # Icon downloader (trade-site static metadata)
+│   ├── query.ts            # CLI report
+│   └── poeninja/           # poe.ninja API client + types
+├── web/                    # Angular 19 dashboard
+│   └── src/app/
+│       ├── core/           # API service, models, denomination service
+│       ├── pages/          # overview, currency, items, flips, guide
+│       └── shared/         # Chart components, range picker
+├── data/                   # SQLite DB + local assets (gitignored)
+├── docs/                   # Full research & implementation docs
+└── package.json
+```
+
+## 🔄 Data Flow
+
+1. `npm run ingest` → hits every configured poe.ninja category, inserts one row per line item into `currency_snapshots` / `item_snapshots`, all stamped with the same `fetched_at` timestamp.
+2. Each run **adds** to history — nothing is overwritten. Re-run hourly to build meaningful time series.
+3. `server.ts` reads the latest snapshot for current views, and full time series across all snapshots for history.
+
+## ⚠️ Limitations
+
+- **Flip Finder is a heuristic**, not a real order book. It uses poe.ninja's aggregate data (listing counts, price trends) — it can't see bid/ask spreads. See [docs/09-poe2fun-strategy-notes.md](docs/09-poe2fun-strategy-notes.md) for the detailed comparison with poe2fun.com.
+- **No scheduling** — ingest is manual by design. History only accumulates when you run it.
+- **Single league** — auto-picks the current softcore challenge league.
+- **`node:sqlite` is experimental** — stable for this use case, but a Node upgrade could change its API.
+- **No tests** — personal tool, verified via manual end-to-end checks.
+
+## 📚 Further Reading
+
+- [docs/README.md](docs/README.md) — Full developer knowledge base from GGG's official docs
+- [docs/08-poe2-market-data-landscape.md](docs/08-poe2-market-data-landscape.md) — Why poe.ninja, what else exists
+- [docs/09-poe2fun-strategy-notes.md](docs/09-poe2fun-strategy-notes.md) — poe2fun.com comparison & flip-finding methodology
+- [docs/10-implementation.md](docs/10-implementation.md) — Full architecture, DB schema, and API reference
 
 Re-run `npm run build:web` after pulling changes to `web/`. For active
 frontend development with hot reload instead, run `npm run server` in one
