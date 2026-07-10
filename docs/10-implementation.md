@@ -3,7 +3,7 @@
 This documents the working system in this repo, as of 2026-07-09. See
 [08-poe2-market-data-landscape.md](08-poe2-market-data-landscape.md) for why
 these particular choices (poe.ninja, phased approach) were made, and
-[09-poe2fun-strategy-notes.md](09-poe2fun-strategy-notes.md) for how this
+[09-community-flip-tool-strategy-notes.md](09-community-flip-tool-strategy-notes.md) for how this
 compares to prior art.
 
 ## Architecture
@@ -201,7 +201,7 @@ Run with `cd web && npm test` (Karma + Jasmine, headless Chrome).
   Node upgrade could change its API. Flagged in case ingestion/server
   scripts start failing after a Node version bump.
 - **Flip finder is a heuristic, not a real order book** — see
-  [09-poe2fun-strategy-notes.md](09-poe2fun-strategy-notes.md). Don't treat
+  [09-community-flip-tool-strategy-notes.md](09-community-flip-tool-strategy-notes.md). Don't treat
   its output as an executable trade signal without checking the trade site.
 - **Single league only** — `CONFIG.league` auto-picks the current softcore
   challenge league; there's no UI to switch leagues or compare across them.

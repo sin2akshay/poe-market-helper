@@ -19,7 +19,7 @@ too limited for an idea.
 - [06-data-exports.md](06-data-exports.md) — officially sanctioned bulk data (passive tree exports)
 - [07-changelog.md](07-changelog.md) — condensed history of API changes, useful for spotting patterns/trends
 - [08-poe2-market-data-landscape.md](08-poe2-market-data-landscape.md) — what's officially buildable for PoE2 market/economy data today, plus a canvass of existing tools (poe.ninja, Exiled Tools, Exiled Exchange 2, etc.) and how they actually source data
-- [09-poe2fun-strategy-notes.md](09-poe2fun-strategy-notes.md) — a certain community flip tool's feature set, buy/sell-spread methodology, and why our current data source can't fully replicate it
+- [09-community-flip-tool-strategy-notes.md](09-community-flip-tool-strategy-notes.md) — a certain community flip tool's feature set, buy/sell-spread methodology, and why our current data source can't fully replicate it
 - [10-implementation.md](10-implementation.md) — architecture, DB schema, full API reference, and Angular app structure for the actual ingestion pipeline + dashboard built in this repo
 
 ## What's built (as of 2026-07-09)

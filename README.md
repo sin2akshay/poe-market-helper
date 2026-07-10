@@ -116,7 +116,7 @@ poe/
 
 ## ⚠️ Limitations
 
-- **Flip Finder is a heuristic**, not a real order book. It uses poe.ninja's aggregate data (listing counts, price trends) — it can't see bid/ask spreads. See [docs/09-poe2fun-strategy-notes.md](docs/09-poe2fun-strategy-notes.md) for how this compares to a certain community flip tool with live spread data.
+- **Flip Finder is a heuristic**, not a real order book. It uses poe.ninja's aggregate data (listing counts, price trends) — it can't see bid/ask spreads. See [docs/09-community-flip-tool-strategy-notes.md](docs/09-community-flip-tool-strategy-notes.md) for how this compares to a certain community flip tool with live spread data.
 - **No scheduling** — ingest is manual by design. History only accumulates when you run it.
 - **Single league** — auto-picks the current softcore challenge league.
 - **`node:sqlite` is experimental** — stable for this use case, but a Node upgrade could change its API.
@@ -134,7 +134,7 @@ Runs via Karma + Jasmine in headless Chrome.
 
 - [docs/README.md](docs/README.md) — Full developer knowledge base from GGG's official docs
 - [docs/08-poe2-market-data-landscape.md](docs/08-poe2-market-data-landscape.md) — Why poe.ninja, what else exists
-- [docs/09-poe2fun-strategy-notes.md](docs/09-poe2fun-strategy-notes.md) — comparison with a certain community flip tool & its live-spread methodology
+- [docs/09-community-flip-tool-strategy-notes.md](docs/09-community-flip-tool-strategy-notes.md) — comparison with a certain community flip tool & its live-spread methodology
 - [docs/10-implementation.md](docs/10-implementation.md) — Full architecture, DB schema, and API reference
 
 Re-run `npm run build:web` after pulling changes to `web/`. For active
